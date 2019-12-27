@@ -8,9 +8,9 @@ Aplikasi ini dibangun menggunakan framework php codeigniter dan framework bootst
 
 ## Built With
 
-* [](https://codeigniter.com/) - CodeIgniter
-* [](https://getbootstrap.com/) - Bootstrap
-* [](https://startbootstrap.com/themes/sb-admin-2/) - Sb-admin2
+[ ](https://codeigniter.com/) - CodeIgniter
+[ ](https://getbootstrap.com/) - Bootstrap
+[ ](https://startbootstrap.com/themes/sb-admin-2/) - Sb-admin2
 
 ## Authors
 
