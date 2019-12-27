@@ -11,6 +11,19 @@ Aplikasi ini dibangun menggunakan framework php codeigniter dan framework bootst
 * [](https://codeigniter.com/) - CodeIgniter
 * [](https://getbootstrap.com/) - Bootstrap
 * [](https://startbootstrap.com/themes/sb-admin-2/) - Sb-admin2
+* [](http://benedmunds.com/ion_auth/) - Ion-Auth
+* [](https://www.grocerycrud.com/) - Grocery CRUD
+
+## Features
+
+- [ ] Login
+- [ ] Register
+- [ ] Landing Page(Admin)
+- [ ] Landing Page(Penyelenggara)
+- [ ] Landing Page(User)
+- [ ] Create Event
+- [ ] Join Event
+- [ ] Payment
 
 ## Authors
 
