@@ -76,15 +76,9 @@ $query_builder = TRUE;
 $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
-<<<<<<< HEAD
-	'username' => '',
-	'password' => '',
-	'database' => '',
-=======
 	'username' => 'root',
 	'password' => '',
 	'database' => 'e-tiket',
->>>>>>> Add ion aut login and user register
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

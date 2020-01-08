@@ -1,0 +1,12 @@
+
+		$userId = $this->ion_auth->get_user_id();
+		$radioVal = $_POST["groups"];
+
+		if($radioVal == "members")
+		{
+			$this->ion_auth->add_to_group('2', $userId);
+		}
+		else if ($radioVal == "penyelenggara")
+		{
+			$this->ion_auth->add_to_group('3', $userId);
+		}

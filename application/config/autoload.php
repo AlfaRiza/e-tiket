@@ -89,11 +89,7 @@ $autoload['drivers'] = array();
 |
 |	$autoload['helper'] = array('url', 'file');
 */
-<<<<<<< HEAD
-$autoload['helper'] = array();
-=======
 $autoload['helper'] = array('url');
->>>>>>> Add ion aut login and user register
 
 /*
 | -------------------------------------------------------------------

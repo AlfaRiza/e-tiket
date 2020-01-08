@@ -446,14 +446,19 @@ class Auth extends CI_Controller
 	public function create_user()
     {
   		// are the already logged in?
-    	if ($this->ion_auth->logged_in())
-		{
+    	//if ($this->ion_auth->logged_in())
+		//{
 			// redirect them to the login page
-			$this->session->set_flashdata('error', "You're already logged in.");
+		//	$this->session->set_flashdata('error', "You're already logged in.");
+		//	redirect('auth', 'refresh');
+		//}
+		$this->data['title'] = $this->lang->line('create_user_heading');
+
+		if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+		{
 			redirect('auth', 'refresh');
 		}
 
-        $this->data['title'] = $this->lang->line('create_user_heading');
 
         $tables = $this->config->item('tables','ion_auth');
         $identity_column = $this->config->item('identity','ion_auth');
@@ -476,26 +481,31 @@ class Auth extends CI_Controller
         $this->form_validation->set_rules('password', $this->lang->line('create_user_validation_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password_confirm]');
         $this->form_validation->set_rules('password_confirm', $this->lang->line('create_user_validation_password_confirm_label'), 'required');
 
+
         if ($this->form_validation->run() == true)
         {
             $email    = strtolower($this->input->post('email'));
             $identity = ($identity_column==='email') ? $email : $this->input->post('identity');
-            $password = $this->input->post('password');
+			$password = $this->input->post('password');
 
             $additional_data = array(
                 'first_name' => $this->input->post('first_name'),
                 'last_name'  => $this->input->post('last_name'),
                 'company'    => $this->input->post('company'),
                 'phone'      => $this->input->post('phone'),
-            );
-        }
-        if ($this->form_validation->run() == true && $this->ion_auth->register($identity, $password, $email, $additional_data))
-        {
-            // check to see if we are creating the user
-            // redirect them back to the admin page
-            $this->session->set_flashdata('success', $this->ion_auth->messages());
-            redirect('auth/login');
-        }
+			);
+			//$data = $this->ion_auth->register($identity, $password, $email, $additional_data);
+
+			if ($this->form_validation->run() == true && $this->ion_auth->register($identity, $password, $email, $additional_data))
+			{
+				// check to see if we are creating the user
+				// redirect them back to the admin page
+				$this->session->set_flashdata('success', $this->ion_auth->messages());
+				//$data = $this->db->select('*')->where('email',$email)->get('users')->result_array();
+				//$id = $data['id'];
+				$this->user_group();
+			}
+		}
         else
         {
             // display the create user form
@@ -541,7 +551,7 @@ class Auth extends CI_Controller
                 'value' => $this->form_validation->set_value('company'),
                 'class'	=> 'form-control',
                 'placeholder'	=> 'Company'
-            );
+			);
             $this->data['phone'] = array(
                 'name'  => 'phone',
                 'id'    => 'phone',
@@ -569,7 +579,111 @@ class Auth extends CI_Controller
 
             $this->_render_page('auth' . DIRECTORY_SEPARATOR . 'create_user', $this->data);
         }
-    }
+	}
+
+	public function register()
+	{
+		// do not allow registration if logged in
+		if ($this->ion_auth->logged_in())
+		{
+			redirect('/');
+		}
+
+		$this->load->helper(array('form', 'url'));
+		$this->load->library('form_validation');
+		$tables = $this->config->item('tables','ion_auth');
+        $identity_column = $this->config->item('identity','ion_auth');
+        $this->data['identity_column'] = $identity_column;
+
+		$this->form_validation->set_rules('first_name', $this->lang->line('create_user_validation_fname_label'), 'required');
+        $this->form_validation->set_rules('last_name', $this->lang->line('create_user_validation_lname_label'), 'required');
+		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|callback_email_check');
+		//$this->form_validation->set_rules('email2', 'Email Confirmation', 'trim|required|valid_email|matches[email]');
+		$this->form_validation->set_rules('password', $this->lang->line('create_user_validation_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password_confirm]');
+		$this->form_validation->set_rules('password_confirm', $this->lang->line('create_user_validation_password_confirm_label'), 'required');
+		
+		if ($this->form_validation->run() == FALSE)
+		{
+			$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
+
+			//$this->load->view('header');
+			$this->load->view('auth/register', $this->data);
+			//$this->load->view('footer');
+		}
+		else
+		{
+			$username = $this->input->post('email');
+			$password = $this->input->post('password');
+			$email = $username;
+			$identity = ($identity_column==='email') ? $email : $this->input->post('identity');
+
+			$additional_data = array(
+                'first_name' => $this->input->post('first_name'),
+                'last_name'  => $this->input->post('last_name'),
+                'company'    => $this->input->post('company'),
+                'phone'      => $this->input->post('phone'),
+			);
+
+			if (!$this->ion_auth->email_check($email))
+			{
+				$group = array('2');
+				$id = $this->ion_auth->register($identity, $password, $email, $additional_data, $group);
+
+				if ($id == FALSE)
+				{
+					$this->session->set_flashdata('message', $this->ion_auth->errors());
+					redirect("auth/register", 'refresh');
+				}
+				else
+				{
+					$messages = $this->ion_auth->messages();
+					echo $messages;
+					//var_dump($id);die();
+					$this->user_group();
+					//redirect('auth/user_group'); // registration success
+				}
+			}
+		}
+	}
+
+	public function email_check($str)
+	{
+		if ($this->ion_auth->email_check($str))
+		{
+			$this->form_validation->set_message('email_check', 'This email is already registered.');
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+	
+	public function user_group()
+    {
+		//var_dump($id);
+		$email  = $this->input->post('email');
+		$user = $this->db->get_where('users',['email'=>$email])->row_array();
+		$id = $user['id'];
+		var_dump($id);
+		$this->load->view('auth/user_group');
+		if (isset($_POST['groups']))
+		{
+			
+			$radioVal = $_POST["groups"];
+
+			if($radioVal == "members")
+			{
+				$this->ion_auth->add_to_group('2', $id);
+			}
+			else if ($radioVal == "penyelenggara")
+			{
+				$this->ion_auth->add_to_group('3', $id);
+			}
+			$this->session->set_flashdata('success', $this->ion_auth->messages());
+			redirect('auth/login');
+			
+            $this->_render_page('auth' . DIRECTORY_SEPARATOR . 'create_user', $this->data);
+		}
+	}
 	/**
 	* Redirect a user checking if is admin
 	*/

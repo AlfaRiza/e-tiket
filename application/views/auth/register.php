@@ -10,7 +10,7 @@
     <meta name="keywords" content="Colorlib Templates">
 
     <!-- Title Page-->
-    <title>Tambah Member</title>
+    <title>Daftar Member</title>
 
     <!-- Icons font CSS-->
     <link href="<?php echo base_url('assets/') ?>vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
@@ -32,9 +32,9 @@
             <div class="card card-4">
                 <div class="card-body">
                     <div id="infoMessage"><?php echo $message;?></div>
-                    <h2 class="title">Tambah User</h2>
+                    <h2 class="title">Form Pendaftaran</h2>
 
-                    <?php echo form_open("auth/create_user");?>
+                    <?php echo form_open("auth/register");?>
                         <div class="row row-space">
                             <div class="col-2">
                                 <div class="input-group">
